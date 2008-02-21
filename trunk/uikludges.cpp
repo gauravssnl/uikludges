@@ -5,8 +5,6 @@
  * 
  * Author: Mikko Ohtamaa <mikko@redinnovation.com>
  * 
- * Copyright 2008 Navicron Ltd.
- * 
  * Copyright 2007 Simo Salminen, cyke64
  * 
  * This file is placed to public domain.
