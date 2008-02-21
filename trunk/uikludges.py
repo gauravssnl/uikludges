@@ -1,14 +1,22 @@
 """
 	UIKludges 2.0
 	
-	UIKludges provides additional UI functions over standard Series 60 appuifw.
-		
-	Copyright 2008 Red Innovation Ltd.
+	http://code.google.com/p/uikludges/
 	
+	UIKludges provides additional UI functions over standard Series 60 appuifw.
+	
+	This module provides self testing capabilities. Run this from Python shell::
+	
+		>>> import uikludges
+		>>> uikludges.test()
+				
 	
 """
 
+
+# For field information, see http://epydoc.sourceforge.net/manual-fields.html
 __author__ = "Mikko Ohtamaa <mikko@redinnovation.com>"
+__copyright__ = "Copyright 2008 Red Innovation Ltd."
 __docformat__ = "epytext"
 __license__ = "BSD" 
 __version__ = "2.0"
@@ -95,7 +103,7 @@ def set_softkey_text(command, text):
 	@type command: int
 	@type text: unicode
 	
-	@raise: SymbianError: if native code execution fails
+	@raise SymbianError: if native code execution fails
 	@return: None
 	"""
 	_uikludges.set_softkey_text(command, text)
@@ -108,32 +116,31 @@ def set_softkey_visibility(command, visibility):
 	the softkey itself, but command it presents.
 	
 	@param command: One of EAknSoftKey* constants in uikludges.py
-	@param visibiltity: True for visible, False for hidden
+	@param visibility: True for visible, False for hidden
 		
 	@type command: int
 	@type visibility: boolean
 	
-	@raise: SymbianError: if native code execution fails
+	@raise SymbianError: if native code execution fails
 	@return: None
 	"""
 	_uikludges.set_softkey_visibility(command, visibility)
 
 def query(text=u"", type="query", defval=None, header=u"", show_left_softkey=True, tone=ENoTone):
-	""" 
-	Open a query dialog.
+	"""  Opens a query dialog.
 	
 	Query dialogs prompts user to enter or choose something.
 	
-	Example:
+	Example::
 	
-		uikludges.query("Python rocks?", type="query")
+		uikludges.query("Python rocks?", type="query", tone=uikludges.EConfirmationTone)
 	
 	@param text: Unicode text string in the query.
 	@param type: Non-unicode text string of: confirmation, text, code, number, data, time, float, message
 	@param defval: The default value of the prompt of None
 	@param header: Dialog header. Applies only for type 'message'.
 	@param show_left_softkey: Should left soft key choice be available for the user
-	@param tone: One of uikludges.py constants: ENoTone, EConfirmationTone, EWarningTone, EErrorTone
+	@param tone: One of uikludges constants: ENoTone, EConfirmationTone, EWarningTone, EErrorTone
 
 	@type text: unicode
 	@type type: string
@@ -152,7 +159,7 @@ def query(text=u"", type="query", defval=None, header=u"", show_left_softkey=Tru
 
 
 #: Exported functions from this module
-__all__ = ["set_softkey_text", "set_softkey_visibilty", "query"]
+__all__ = ["set_softkey_text", "set_softkey_visibility", "query"]
 
 # Export all E*** pseudo constants automatically
 for x in locals().keys():
@@ -161,12 +168,7 @@ for x in locals().keys():
 
 def _test():
 	""" Self-testing for uikludges module. 
-	
-	Run this from Python shell::
-	
-		>>> import uikludges
-		>>> uikludges.test()
-	
+		
 	"""
 	
 	print "UIKludges self-testing"
