@@ -7,7 +7,7 @@
  * 
  * Copyright 2007 Simo Salminen, cyke64
  * 
- * This file is placed to public domain.
+ * For licensing information, see uikludges.py.
  * 
  */
 #include <e32std.h>
