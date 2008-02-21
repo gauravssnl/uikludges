@@ -444,53 +444,11 @@ static TInt ProcessLaunch(const TDesC& aFileName, const TDesC& aCommand,
   return error;
 }
 
-/*
- *
- * Implementation of e32.start_server()
- *
- */
-extern "C" PyObject *
-start_server(PyObject* /*self*/, PyObject* args)
-{
-  PyObject* it;
-
-  if (!PyArg_ParseTuple(args, "O", &it))
-    return NULL;
-
-  PyObject* fn = PyUnicode_FromObject(it);
-  if (!fn)
-    return NULL;
-
-  TPtrC name(PyUnicode_AsUnicode(fn), PyUnicode_GetSize(fn));
-  TParse p;
-  p.Set(name, NULL, NULL);
-  
-  if (!(p.Ext().CompareF(_L(".py")) == 0)) {
-    Py_DECREF(fn);
-    PyErr_SetString(PyExc_TypeError, "Python script name expected");
-    return NULL;
-  }
-  
-  TInt error;
-  error =
-#if defined(__WINS__) && !defined(EKA2)
-    ProcessLaunch(_L("\\system\\programs\\Python_launcher.dll"), name);
-#else
-    ProcessLaunch(_L("lifematta_launcher.exe"), name);
-#endif
-
-  Py_DECREF(fn);
-  
-  RETURN_ERROR_OR_PYNONE(error);
-}
-
-
 
 static const PyMethodDef uikludges_methods[] =
 {
 	{"set_softkey_text", (PyCFunction)uikludges_set_softkey_text, METH_VARARGS},		
 	{"set_softkey_visibility", (PyCFunction)uikludges_set_softkey_visibility, METH_VARARGS},
-    {"start_server", (PyCFunction)start_server, METH_VARARGS, NULL},			
 	{"query", (PyCFunction)query, METH_VARARGS},		
 	{0, 0} /* sentinel */
 };
