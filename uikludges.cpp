@@ -5,6 +5,8 @@
  * 
  * Author: Mikko Ohtamaa <mikko@redinnovation.com>
  * 
+ * Copyright 2008 Red Innovation Ltd.
+ * 
  * Copyright 2007 Simo Salminen, cyke64
  * 
  * For licensing information, see uikludges.py.
