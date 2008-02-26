@@ -1,5 +1,5 @@
 """
-	UIKludges 2.0
+	UIKludges 2.1
 	
 	http://code.google.com/p/uikludges/
 	
@@ -15,21 +15,15 @@
 
 
 # For field information, see http://epydoc.sourceforge.net/manual-fields.html
-__author__ = "Mikko Ohtamaa <mikko@redinnovation.com>"
+__author__ = "Mikko Ohtamaa <mikko@redinnovation.com>, Jussi Toivola <jtoivola@gmail.com>"
 __copyright__ = "Copyright 2008 Red Innovation Ltd."
 __docformat__ = "epytext"
 __license__ = "BSD" 
-__version__ = "2.0"
+__version__ = "2.1"
 
 import e32
 
-if e32.s60_version_info>=(3,0):
-	# Symbian 9.0 way to import things
-    import imp
-    _uikludges=imp.load_dynamic('_uikludges', 'c:\\sys\\bin\\_uikludges.pyd')    
-else:
-	# Old way
-    import _uikludges
+import _uikludges
 
 def _nextval():
 	""" Helper function to enumerate soft key pseudo constants """
@@ -90,8 +84,29 @@ EWarningTone = 1004 # avkon.hrh
 #: Tone constants for query()
 EErrorTone = 1005 # avkon.hrh
 
+
+def set_navi_pane_title(text):
+	"""
+	Set application pane title.
+	
+	Does not work for text fields and is quite useless with 'full' canvas.
+	
+	@param text: new title pane text as unicode 
+	@type text: unicode
+	
+	@raise SymbianError: if native code execution fails
+	@return: None
+	@author: Jussi Toivola jtoivola@gmail.com
+	@since: 2.1
+	"""
+	_uikludges.set_navi_pane_title(text)
+
+import atexit
+# Required to destroy gNaviDecorator.
+atexit.register( _uikludges.cleanup )
+
 def set_softkey_text(command, text):
-	""" 
+	"""
 	Set soft key label.
 	
 	Softkey labels are defined per command. So, you are not changing
@@ -133,7 +148,7 @@ def query(text=u"", type="query", defval=None, header=u"", show_left_softkey=Tru
 	
 	Example::
 	
-		uikludges.query("Python rocks?", type="query", tone=uikludges.EConfirmationTone)
+		uikludges.query(u"Python rocks?", type="query", tone=uikludges.EConfirmationTone)
 	
 	@param text: Unicode text string in the query.
 	@param type: Non-unicode text string of: confirmation, text, code, number, data, time, float, message
@@ -159,7 +174,10 @@ def query(text=u"", type="query", defval=None, header=u"", show_left_softkey=Tru
 
 
 #: Exported functions from this module
-__all__ = ["set_softkey_text", "set_softkey_visibility", "query"]
+__all__ = [ "set_navi_pane_title", 
+			"set_softkey_text", 
+			"set_softkey_visibility",
+			"query"]
 
 # Export all E*** pseudo constants automatically
 for x in locals().keys():
@@ -178,7 +196,7 @@ def _test():
 	c = appuifw.Canvas()
 	appuifw.app.body = c
 	c.text([0, 0], "Testing UI operations")
-
+	
 	query(u"Simple query",  "query")
 	query(u"Simple query 2",  "query", tone=EErrorTone)
 	query(u"Simple query 3",  "query", header=u"Test header")
@@ -190,7 +208,7 @@ def _test():
 
 	# Test message query
 	query(long_text, 
-	      "message", None, header=u"A header", show_left_softkey=False, tone=EErrorTone)
+		"message", None, header=u"A header", show_left_softkey=False, tone=EErrorTone)
 	
 	# Use visual triaging method for error detection
 	set_softkey_text(EAknSoftkeyExit, u"Hello")
@@ -200,6 +218,14 @@ def _test():
 	set_softkey_visibility(EAknSoftkeyOptions, False)
 	e32.ao_sleep(1)	
 	set_softkey_visibility(EAknSoftkeyOptions, True)
+	e32.ao_sleep(1)	
+	set_navi_pane_title( u"JT was here")
+	e32.ao_sleep(1)
+	try:
+		set_navi_pane_title( long_text )
+	except SymbianError:
+		set_navi_pane_title( u"Too long title test ok" )
+	e32.ao_sleep(1)
 	
 	try:
 		set_softkey_text(1001, u"Bad id")
