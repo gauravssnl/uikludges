@@ -33,6 +33,98 @@
 
 #include "logger.h"
 
+#include <EIKENV.H> //CEikonEnv
+#include <aknindicatorcontainer.h> 
+
+
+// Owns the pointer to the navi label.
+CAknNavigationDecorator* gNaviDecorator = NULL;
+
+// Not sure about the max length, but 32 was used in example.
+const TInt KMaxNaviPaneTitleLength = 32;
+typedef TBuf<KMaxNaviPaneTitleLength> TNaviPaneTitle ;
+
+/**
+ * Set navi pane title
+ *
+ */
+static void SetNaviPaneTitleTextL( TNaviPaneTitle& aTitle ) {
+    
+    CAknNavigationControlContainer* iNaviPane = 0;
+    
+    // Get the reference of the status pane
+    CEikStatusPane *statusPane = CEikonEnv::Static()->AppUiFactory()->StatusPane();
+ 
+    if ( statusPane ) {
+     
+        // Get the reference of the navi pane
+        iNaviPane = static_cast<CAknNavigationControlContainer*>(
+                    statusPane->ControlL( TUid::Uid(EEikStatusPaneUidNavi) ) );
+        
+        // Destroy old         
+        if(gNaviDecorator) {
+            iNaviPane->Pop( gNaviDecorator );
+            delete gNaviDecorator;
+            gNaviDecorator = NULL;
+        }
+        // And create new
+        gNaviDecorator = iNaviPane->CreateEditorIndicatorContainerL();
+        
+        // Get the reference of the indicator container inside the gNaviDecorator
+        CAknIndicatorContainer* indiContainer = 
+        static_cast<CAknIndicatorContainer*>(gNaviDecorator->DecoratedControl());                            
+         
+        if ( indiContainer && CEikStatusPaneBase::Current() ) {
+            
+            indiContainer->SetIndicatorValueL(
+                TUid::Uid( EAknNaviPaneEditorIndicatorMessageLength ), aTitle );
+            
+            indiContainer->SetIndicatorState(
+                TUid::Uid( EAknNaviPaneEditorIndicatorMessageLength ),
+                         EAknIndicatorStateOn);
+         
+        }
+        // Add the title to navi pane
+        iNaviPane->PushL( *gNaviDecorator );
+    }
+
+}
+
+/**
+ * Python wrapper for setting the pane title. TRAPs the leaves.
+ */ 
+static PyObject* uikludges_set_navi_pane_title(PyObject* /*self*/, PyObject *args)
+{
+    char* text_ = 0;    
+    TInt textlen = 0;  
+    if (!PyArg_ParseTuple(args, "u#", &text_, &textlen))
+    {
+    return 0;
+    }
+  
+    if( textlen > KMaxNaviPaneTitleLength ) {        
+        RETURN_ERROR_OR_PYNONE(KErrBadDescriptor);
+    }
+    
+    TPtrC text((TUint16*)text_, textlen);
+    TNaviPaneTitle msg;
+    msg.Append( text ); // Text to be displayed
+    
+    TRAPD( err, SetNaviPaneTitleTextL( msg ) );
+    
+    RETURN_ERROR_OR_PYNONE(err);
+}
+
+
+static PyObject* uikludges_cleanup(PyObject* /*self*/) {
+    
+    if( gNaviDecorator ) {
+        delete gNaviDecorator;
+        gNaviDecorator = NULL;
+    }
+    RETURN_ERROR_OR_PYNONE(KErrNone);
+}
+
 /**
  * Set soft key text in the main view
  *
@@ -447,16 +539,18 @@ static TInt ProcessLaunch(const TDesC& aFileName, const TDesC& aCommand,
 
 static const PyMethodDef uikludges_methods[] =
 {
-	{"set_softkey_text", (PyCFunction)uikludges_set_softkey_text, METH_VARARGS},		
+	{"cleanup", (PyCFunction)uikludges_cleanup, METH_NOARGS},
+    {"set_navi_pane_title", (PyCFunction)uikludges_set_navi_pane_title, METH_VARARGS},
+	{"set_softkey_text", (PyCFunction)uikludges_set_softkey_text, METH_VARARGS},
 	{"set_softkey_visibility", (PyCFunction)uikludges_set_softkey_visibility, METH_VARARGS},
 	{"query", (PyCFunction)query, METH_VARARGS},		
 	{0, 0} /* sentinel */
 };
 
+
 DL_EXPORT(void) init_uikludges()
 {
 	PyObject* module = Py_InitModule("_uikludges", (PyMethodDef*) uikludges_methods);
-
 }
 
 
