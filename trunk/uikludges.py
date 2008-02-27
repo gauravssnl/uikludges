@@ -84,19 +84,41 @@ EWarningTone = 1004 # avkon.hrh
 #: Tone constants for query()
 EErrorTone = 1005 # avkon.hrh
 
+ELeftArrow  = 0x0001
+ERightArrow = 0x0002
 
-def set_navi_pane_title(text):
+def set_navi_pane_arrow( arrow, enable ):
 	"""
-	Set application pane title.
+	Enable/disable left and right navi pane arrows.
 	
 	Does not work for text fields and is quite useless with 'full' canvas.
 	
-	@param text: new title pane text as unicode 
+	@param arrow: Id of the arrow to set. Either ELeftArrow or ERightArrow.
+	@param enable: True to enable, False to disable
+	@type arrow: int
+	@type enable: boolean
+	
+	@raise SymbianError: if native code execution fails
+	@return: None
+	@author: Jussi Toivola <jtoivola@gmail.com>
+	@since: 2.1
+	"""
+	_uikludges.set_navi_pane_arrow( arrow, enable )
+	
+def set_navi_pane_title(text):
+	"""
+	Set title text for navi pane.
+	
+	Does not work for text fields and is quite useless with 'full' canvas.
+	
+	@param text: New title pane text as unicode. Max size 32.
+				 At least on emulator, the text disappears if it's size exceeds 
+				 the drawing area reserved for the text( about 17 characters ).
 	@type text: unicode
 	
 	@raise SymbianError: if native code execution fails
 	@return: None
-	@author: Jussi Toivola jtoivola@gmail.com
+	@author: Jussi Toivola <jtoivola@gmail.com>
 	@since: 2.1
 	"""
 	_uikludges.set_navi_pane_title(text)
@@ -122,7 +144,7 @@ def set_softkey_text(command, text):
 	@return: None
 	"""
 	_uikludges.set_softkey_text(command, text)
-		
+	
 def set_softkey_visibility(command, visibility):
 	""" 
 	Hides or shows soft key label.
@@ -174,7 +196,8 @@ def query(text=u"", type="query", defval=None, header=u"", show_left_softkey=Tru
 
 
 #: Exported functions from this module
-__all__ = [ "set_navi_pane_title", 
+__all__ = [	"set_navi_pane_arrow",
+			"set_navi_pane_title", 
 			"set_softkey_text", 
 			"set_softkey_visibility",
 			"query"]
@@ -219,13 +242,39 @@ def _test():
 	e32.ao_sleep(1)	
 	set_softkey_visibility(EAknSoftkeyOptions, True)
 	e32.ao_sleep(1)	
-	set_navi_pane_title( u"JT was here")
-	e32.ao_sleep(1)
+	
+	
+	# Check navi pane title boundary
+	set_navi_pane_title( u"A"* 32 )	
+	print "navi_pane_title boundary OK"
+	e32.ao_sleep(0.5)
 	try:
-		set_navi_pane_title( long_text )
+		set_navi_pane_title( u"A" * 33 )
+		msg = u"Too long title test fail"
+		set_navi_pane_title( msg )
+		print msg
 	except SymbianError:
-		set_navi_pane_title( u"Too long title test ok" )
-	e32.ao_sleep(1)
+		msg = u"Too long title test ok"
+		set_navi_pane_title( msg )
+		print msg
+	e32.ao_sleep(0.5)
+	
+	# Test navi pane
+	set_navi_pane_title( u"JT")
+	e32.ao_sleep(0.5)
+	set_navi_pane_arrow( ELeftArrow, True )
+	set_navi_pane_title( u"JT was")
+	e32.ao_sleep(0.2)
+	set_navi_pane_title( u"JT was here")
+	e32.ao_sleep(0.2)
+	set_navi_pane_arrow( ERightArrow, True )
+	set_navi_pane_title( u"JT was here...")
+	e32.ao_sleep(0.2)
+	# Remove the arrows and navi pane text
+	set_navi_pane_arrow( ELeftArrow, False)
+	e32.ao_sleep(0.2)
+	set_navi_pane_arrow( ERightArrow, False )
+	set_navi_pane_title( u"")
 	
 	try:
 		set_softkey_text(1001, u"Bad id")

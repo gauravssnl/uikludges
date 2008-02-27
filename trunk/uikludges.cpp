@@ -1,9 +1,9 @@
 /**
  * UI enhancements for Python for Series 60
- * 
  *
  * 
  * Author: Mikko Ohtamaa <mikko@redinnovation.com>
+ *         Jussi Toivola <jtoivola@gmail.com>
  * 
  * Copyright 2008 Red Innovation Ltd.
  * 
@@ -37,12 +37,94 @@
 #include <aknindicatorcontainer.h> 
 
 
+
 // Owns the pointer to the navi label.
+// TODO: Should we create this when initializing the module?
 CAknNavigationDecorator* gNaviDecorator = NULL;
 
-// Not sure about the max length, but 32 was used in example.
+// Not sure about the max length, but 32 was used in one example.
+// The navi can show only 17 characters anyway.( tested in emulator )
 const TInt KMaxNaviPaneTitleLength = 32;
 typedef TBuf<KMaxNaviPaneTitleLength> TNaviPaneTitle ;
+
+/** Utility to get the navipane*/
+static CAknNavigationControlContainer* GetNaviPane() {
+
+    CEikStatusPane *statusPane = CEikonEnv::Static()->AppUiFactory()->StatusPane();
+    return static_cast<CAknNavigationControlContainer*>(
+                    statusPane->ControlL( TUid::Uid(EEikStatusPaneUidNavi) ) );               
+}
+
+/** Utility to create gNaviDecorator */
+static void CreateGlobalNaviDecorator( ) {
+
+    // Create, if not created yet
+    if(!gNaviDecorator) {
+        
+        // Get the reference of the navi pane
+        CAknNavigationControlContainer* navipane = GetNaviPane();
+        gNaviDecorator = navipane->CreateEditorIndicatorContainerL();
+        // Add the title to navi pane
+        navipane->PushL( *gNaviDecorator );
+    }            
+}
+
+/**
+ * Enable\disable navi pane arrows
+ * see http://wiki.forum.nokia.com/index.php/How_to_enable_navigation_arrows
+ */
+static void EnableNaviPaneArrowL( CAknNavigationDecorator::TScrollButton &aArrow,
+                   TBool aEnable ) {
+
+    RDebug::Printf("EnableNaviPaneArrow" );
+    CreateGlobalNaviDecorator();
+    
+    if(gNaviDecorator) {
+        // Popping and pushing the decorator back seems to refresh the arrows.
+        // Ifthis is not done the arrows are drawn only on first time
+        // or not at all if the decorator does not have the arrows enabled.
+        CAknNavigationControlContainer* navipane = GetNaviPane(); 
+        navipane->Pop( gNaviDecorator );
+
+        RDebug::Printf("SetScrollButtonDimmed" );
+        gNaviDecorator->SetScrollButtonDimmed(aArrow, !aEnable);
+        gNaviDecorator->MakeScrollButtonVisible(ETrue);
+  
+        navipane->PushL( *gNaviDecorator );
+    }
+
+}
+
+#include <e32debug.h>
+/**
+ * Python wrapper for setting the pane arrow.
+ */
+static PyObject* uikludges_set_navi_pane_arrow(PyObject* /*self*/, PyObject *args)
+{
+    TInt _enable = ETrue;
+    TInt _arrow = CAknNavigationDecorator::ELeftButton;
+    if (!PyArg_ParseTuple(args, "ii", &_arrow, &_enable ))
+    {
+    return 0;
+    }
+    RDebug::Printf("_enable: %d, _arrow: %d", &_enable, &_arrow );
+
+    //Check arguments
+    switch( _arrow ) {
+        case CAknNavigationDecorator::ERightButton:
+        case CAknNavigationDecorator::ELeftButton:
+            break;
+        default:
+            RETURN_ERROR_OR_PYNONE(KErrBadDescriptor);
+    }
+
+    CAknNavigationDecorator::TScrollButton arrow = 
+        static_cast<CAknNavigationDecorator::TScrollButton>(_arrow);
+
+    TRAPD( err, EnableNaviPaneArrowL( arrow, _enable); )
+
+    RETURN_ERROR_OR_PYNONE(err);
+}
 
 /**
  * Set navi pane title
@@ -58,17 +140,8 @@ static void SetNaviPaneTitleTextL( TNaviPaneTitle& aTitle ) {
     if ( statusPane ) {
      
         // Get the reference of the navi pane
-        iNaviPane = static_cast<CAknNavigationControlContainer*>(
-                    statusPane->ControlL( TUid::Uid(EEikStatusPaneUidNavi) ) );
-        
-        // Destroy old         
-        if(gNaviDecorator) {
-            iNaviPane->Pop( gNaviDecorator );
-            delete gNaviDecorator;
-            gNaviDecorator = NULL;
-        }
-        // And create new
-        gNaviDecorator = iNaviPane->CreateEditorIndicatorContainerL();
+        iNaviPane = GetNaviPane();
+        CreateGlobalNaviDecorator();        
         
         // Get the reference of the indicator container inside the gNaviDecorator
         CAknIndicatorContainer* indiContainer = 
@@ -84,14 +157,12 @@ static void SetNaviPaneTitleTextL( TNaviPaneTitle& aTitle ) {
                          EAknIndicatorStateOn);
          
         }
-        // Add the title to navi pane
-        iNaviPane->PushL( *gNaviDecorator );
     }
 
 }
 
 /**
- * Python wrapper for setting the pane title. TRAPs the leaves.
+ * Python wrapper for setting the pane title.
  */ 
 static PyObject* uikludges_set_navi_pane_title(PyObject* /*self*/, PyObject *args)
 {
@@ -540,10 +611,13 @@ static TInt ProcessLaunch(const TDesC& aFileName, const TDesC& aCommand,
 static const PyMethodDef uikludges_methods[] =
 {
 	{"cleanup", (PyCFunction)uikludges_cleanup, METH_NOARGS},
-    {"set_navi_pane_title", (PyCFunction)uikludges_set_navi_pane_title, METH_VARARGS},
+	//TODO: with static_cast<CAknNaviLabel*>(iNaviLabelDecorator->DecoratedControl())->Text();
+	//{"get_navi_pane_title", (PyCFunction)uikludges_get_navi_pane_title, METH_NOARGS},
+	{"set_navi_pane_arrow", (PyCFunction)uikludges_set_navi_pane_arrow, METH_VARARGS},
+	{"set_navi_pane_title", (PyCFunction)uikludges_set_navi_pane_title, METH_VARARGS},
 	{"set_softkey_text", (PyCFunction)uikludges_set_softkey_text, METH_VARARGS},
 	{"set_softkey_visibility", (PyCFunction)uikludges_set_softkey_visibility, METH_VARARGS},
-	{"query", (PyCFunction)query, METH_VARARGS},		
+	{"query", (PyCFunction)query, METH_VARARGS},
 	{0, 0} /* sentinel */
 };
 
