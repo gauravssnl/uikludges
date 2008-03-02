@@ -76,7 +76,6 @@ static void CreateGlobalNaviDecorator( ) {
 static void EnableNaviPaneArrowL( CAknNavigationDecorator::TScrollButton &aArrow,
                    TBool aEnable ) {
 
-    RDebug::Printf("EnableNaviPaneArrow" );
     CreateGlobalNaviDecorator();
     
     if(gNaviDecorator) {
@@ -86,7 +85,6 @@ static void EnableNaviPaneArrowL( CAknNavigationDecorator::TScrollButton &aArrow
         CAknNavigationControlContainer* navipane = GetNaviPane(); 
         navipane->Pop( gNaviDecorator );
 
-        RDebug::Printf("SetScrollButtonDimmed" );
         gNaviDecorator->SetScrollButtonDimmed(aArrow, !aEnable);
         gNaviDecorator->MakeScrollButtonVisible(ETrue);
   
@@ -95,7 +93,6 @@ static void EnableNaviPaneArrowL( CAknNavigationDecorator::TScrollButton &aArrow
 
 }
 
-#include <e32debug.h>
 /**
  * Python wrapper for setting the pane arrow.
  */
@@ -107,7 +104,6 @@ static PyObject* uikludges_set_navi_pane_arrow(PyObject* /*self*/, PyObject *arg
     {
     return 0;
     }
-    RDebug::Printf("_enable: %d, _arrow: %d", &_enable, &_arrow );
 
     //Check arguments
     switch( _arrow ) {
