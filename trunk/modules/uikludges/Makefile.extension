@@ -1,0 +1,5 @@
+
+all:
+	copy ..\..\templates\Makefile.in .\Makefile.generic
+	copy ..\..\templates\bld.inf .
+	make -f Makefile.generic
