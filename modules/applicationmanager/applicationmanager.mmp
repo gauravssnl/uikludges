@@ -1,0 +1,29 @@
+TARGETTYPE	dll
+TARGET		appswitch.pyd
+TARGETPATH	\system\libs
+
+NOSTRICTDEF
+EXPORTUNFROZEN
+
+SYSTEMINCLUDE 	\epoc32\include
+SYSTEMINCLUDE 	\epoc32\include\libc
+
+USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Symbian
+USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Include
+USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Python
+
+LIBRARY 	python222.lib
+LIBRARY 	euser.lib
+LIBRARY		apgrfx.lib 
+LIBRARY		eikcore.lib 
+LIBRARY		cone.lib 
+LIBRARY     apparc.lib 
+LIBRARY     ws32.lib 
+LIBRARY     bafl.lib 
+
+//MACRO __DO_LOGGING__
+//LIBRARY	    flogger.lib
+
+
+SOURCE		appswitch.cpp
+
