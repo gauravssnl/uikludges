@@ -17,8 +17,6 @@
 # Human readable name for the extension
 PROJECTNAME="Uikludges 2.0"
 
-DLLS=uikludges applicationmanager
-
 # Where is your stuff installed
 PYTHON=c:\python25\python
 EPYDOC=c:\python25\scripts\epydoc
@@ -44,6 +42,6 @@ build_pyd:
 # placed in a _build subfolder from where you can Bluetooth it to your phone.
 #
 prepare_dll:
-	copy $EPOCROOTepoc32\release\gcce\urel\_${DLLNAME}.pyd ${BUILD_PATH}
+	copy %EPOCROOT%epoc32\release\gcce\urel\_${DLLNAME}.pyd ${BUILD_PATH}
 
 	
