@@ -44,8 +44,6 @@ build_pyd:
 # placed in a _build subfolder from where you can Bluetooth it to your phone.
 #
 prepare_dll:
-	- rmdir /s /q _build > nul
-	mkdir _build
 	copy $EPOCROOTepoc32\release\gcce\urel\_${DLLNAME}.pyd ${BUILD_PATH}
 
 	
