@@ -8,3 +8,4 @@ gcce winscw
 
 PRJ_MMPFILES
 uikludges.mmp
+modules\applicationmanager\applicationmanager.mmp

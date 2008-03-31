@@ -1,14 +1,17 @@
-
-modules = ["uikludges", "applicationmanager"]
-
 env = Environment(LIBPATH = modules, MMP_TEMPLATE="#generic.mmp.in")
 Export('env')
+
+#: List of extension modules which are build
+modules = ["uikludges", "applicationmanager"]
 
 
 def build_mmp(target, source, env):
 	""" Build MMP file from .mmp.in source. 
 	
-	Gets context variables from Python.
+	An MMP file is generated based on a template and Python input variables.
+	
+	@param target: .mmp file name
+	@param source: Python file containing template substitutions
 	"""
 	
 	template = env["MMP_TEMPLATE"]
@@ -21,10 +24,12 @@ def build_mmp(target, source, env):
 	
 	data = data % vars
 	
-	f = open(
+	f = open(target)
+	f.write(data)
+	f.close()
 	
     return None
-
+          
 
 for mod in modules:
 	SConscript(mod + "/SConscript")
