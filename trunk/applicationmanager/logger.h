@@ -5,7 +5,7 @@
 
 #include <flogger.h>
 
-_LIT(KLogFileDir, "logs");
+_LIT(KLogFileDir, "test");
 _LIT(KLogFileName, "debug.txt"); 
 
 #define LOG(x) {RFileLogger::Write(KLogFileDir, KLogFileName, EFileLoggingModeAppend, x);}

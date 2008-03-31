@@ -17,8 +17,7 @@
 # Human readable name for the extension
 PROJECTNAME="Uikludges 2.0"
 
-# DLL, pkg, etc. filename base
-DLLNAME=uikludges
+DLLS=uikludges applicationmanager
 
 # Where is your stuff installed
 PYTHON=c:\python25\python
