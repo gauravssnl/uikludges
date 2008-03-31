@@ -18,7 +18,7 @@
 ;
 ; Files to install:
 
-"_build\_uikludges.pyd"    			-"c:\sys\bin\_uikludges.pyd"
-"_build\_applicationmanager.pyd"    -"c:\sys\bin\_applicationmanager.pyd"
+"build\_uikludges.pyd"    			-"c:\sys\bin\_uikludges.pyd"
+"build\_applicationmanager.pyd"    -"c:\sys\bin\_applicationmanager.pyd"
 "lib\uikludges.py"		    -"c:\resource\uikludges.py"
 "lib\applicationmanager.py"	-"c:\resource\applicationmanager.py"

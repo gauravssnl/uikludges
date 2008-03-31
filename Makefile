@@ -1,3 +1,10 @@
+#
+#
+# Reserved UIDs used in
+# - uikludges.pkg
+# - modules\uikludges\uikludges.mmp
+# - modules\applicationmanager\applicationmanager.mmp
+#
 
 # Where is your stuff installed
 PYTHON=c:\python25\python
@@ -50,12 +57,12 @@ extensions:
 #
 sis: 
 	makesis uikludges.pkg 
-	move uikludges.SIS ${UNSIGNED_SIS}
+	copy uikludges.SIS ${UNSIGNED_SIS}
 	
 #
 # Sign SIS for phone installation
 #
 sign_sis:
-	${PYTHON} ${ENSYMBLE} signsis --cert ${CERT} --privkey=${PRIV_KEY} --passphrase=${SIGN_PASS} --execaps=${CAPABILITIES} --dllcaps=${CAPABILITIES} ${UNSIGNED_SIG} ${SIGNED_SIS}
+	${PYTHON} ${ENSYMBLE} signsis --cert ${CERT} --privkey=${PRIV_KEY} --passphrase=${SIGN_PASS} --execaps=${CAPABILITIES} --dllcaps=${CAPABILITIES} ${UNSIGNED_SIS} ${SIGNED_SIS}
 	
 	
