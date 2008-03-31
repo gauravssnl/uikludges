@@ -19,9 +19,10 @@ docs:
 	zip -r apidoc.zip apidoc
 	
 extensions:
-	echo "FUCK"
+	- rmdir /s /q build
+	mkdir build
 	cd modules\uikludges ; make -f Makefile.extension DLLNAME=uikludges
 	cd ..\..
 
 sis: 
-	makesis uikludges
+	makesis -f uikludges.pkg
