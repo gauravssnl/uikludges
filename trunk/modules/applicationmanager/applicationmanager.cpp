@@ -171,9 +171,12 @@ DL_EXPORT(void) init_appswitch()
 	Py_InitModule("appswitch", (PyMethodDef*) appswitch_methods);	
 }
 
+#ifndef EKA2
+// DLL entry point is needed only for Series 60 3.0 predecessors (non-EKA2)
 GLDEF_C TInt E32Dll(TDllReason)
 {
-	return KErrNone;
+  return KErrNone;
 }
+#endif // EKA2
 
 

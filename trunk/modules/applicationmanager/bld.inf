@@ -1,6 +1,10 @@
 
 PRJ_PLATFORMS
-wins armi
+#ifdef EKA1
+armi wins winscw
+#else
+gcce winscw
+#endif
 
 PRJ_MMPFILES
-appswitch.mmp
+applicationmanager.mmp

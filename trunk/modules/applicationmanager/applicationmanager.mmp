@@ -1,5 +1,5 @@
 TARGETTYPE	dll
-TARGET		appswitch.pyd
+TARGET		_applicationmanager.pyd
 TARGETPATH	\system\libs
 
 NOSTRICTDEF
@@ -8,9 +8,10 @@ EXPORTUNFROZEN
 SYSTEMINCLUDE 	\epoc32\include
 SYSTEMINCLUDE 	\epoc32\include\libc
 
-USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Symbian
-USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Include
-USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Python
+// TODO: Need to hardcode for now, before Scons is fixed
+USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Symbian
+USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Include
+USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Python
 
 LIBRARY 	python222.lib
 LIBRARY 	euser.lib
@@ -25,5 +26,10 @@ LIBRARY     bafl.lib
 //LIBRARY	    flogger.lib
 
 
-SOURCE		appswitch.cpp
+SOURCE		applicationmanager.cpp
 
+UID 0x200167F8 0x200167F9
+
+#ifdef EKA2
+CAPABILITY
+#endif
