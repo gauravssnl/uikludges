@@ -19,9 +19,10 @@ Build system template includes:
   * Creating installable SIS file
   * Creating API documentation using Epydoc
 
-=== Future featues ===
+= Future featues =
 
 Features we are planning to implement
+  * Scons based flexible build chain
   * Progress dialog
   * HTML'ish rich text viewer
 
