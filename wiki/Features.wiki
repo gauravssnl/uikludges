@@ -14,7 +14,10 @@ UIKludges has the following features
   * Sending applications to background and bringing them back to foreground
   * Ending and killing applications
 
-Build system template includes:
+== Build system ==
+
+Build system demostrates Makefile based approach for building PyS60 extensions
+
   * Building target device DLL files
   * Creating installable SIS file
   * Creating API documentation using Epydoc
