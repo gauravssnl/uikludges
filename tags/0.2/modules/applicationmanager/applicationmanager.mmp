@@ -1,0 +1,35 @@
+TARGETTYPE	dll
+TARGET		_applicationmanager.pyd
+TARGETPATH	\system\libs
+
+NOSTRICTDEF
+EXPORTUNFROZEN
+
+SYSTEMINCLUDE 	\epoc32\include
+SYSTEMINCLUDE 	\epoc32\include\libc
+
+// TODO: Need to hardcode for now, before Scons is fixed
+USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Symbian
+USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Include
+USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Python
+
+LIBRARY 	python222.lib
+LIBRARY 	euser.lib
+LIBRARY		apgrfx.lib 
+LIBRARY		eikcore.lib 
+LIBRARY		cone.lib 
+LIBRARY     apparc.lib 
+LIBRARY     ws32.lib 
+LIBRARY     bafl.lib 
+
+//MACRO __DO_LOGGING__
+//LIBRARY	    flogger.lib
+
+
+SOURCE		applicationmanager.cpp
+
+UID 0x200167F8 0x200167F9
+
+#ifdef EKA2
+CAPABILITY PowerMgmt ReadDeviceData WriteDeviceData TrustedUI ProtServ SwEvent NetworkServices LocalServices ReadUserData WriteUserData Location SurroundingsDD UserEnvironment
+#endif

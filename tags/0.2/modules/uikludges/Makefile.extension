@@ -1,0 +1,4 @@
+
+all:
+	copy ..\..\templates\Makefile.in .\Makefile.generic
+	make -f Makefile.generic

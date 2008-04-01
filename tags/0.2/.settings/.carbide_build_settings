@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CarbideBuilderConfigInfo version="1">
+  <configuration name="Emulator Debug (WINSCW) [S60_3rd_FP1]">
+    <sisBuilder additionalOptions="" cert="" contentSearchLocation="" key="" outputFileName="" password="" pkgFile="(none)" signedFileName=""/>
+    <envVars/>
+  </configuration>
+  <configuration name="Phone Release (GCCE) [S60_3rd_FP1]">
+    <sisBuilder additionalOptions="" cert="C:\Symbian\9.2\S60_3rd_FP1\Epoc32\winscw\c\web\web\symbian\certificates\Blogall2.cer" contentSearchLocation="" key="C:\Symbian\9.2\S60_3rd_FP1\Epoc32\winscw\c\web\web\symbian\certificates\ACSCert.pfx.key" outputFileName="uikludge.sis" password="" pkgFile="(none)" signedFileName="uikludge_signed.sis"/>
+    <envVars/>
+  </configuration>
+</CarbideBuilderConfigInfo>
