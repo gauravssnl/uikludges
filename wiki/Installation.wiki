@@ -1,5 +1,3 @@
-# How to install this for your phone
-
 == By building ==
 
 Symbian platform security makes it difficult to distribute development binaries. Thus, we recommend you to build this thing your self.
