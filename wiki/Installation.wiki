@@ -22,6 +22,12 @@ To build your own version
 
  * Install to the phone
 
+=== Tutorial ===
+
+See [http://wiki.opensource.nokia.com/projects/PyS60_extensions_creation_using_Carbide this tutorial] for more information how to create your own PyS60 Native extensions using Carbide C++.
+
+
+
 == By SIS hacking ==
 
 Other way is to get Ensymble and other [http://discussion.forum.nokia.com/forum/showthread.php?t=129040&highlight=unsis SIS manipulation tools] and change capabilities and UIDs directly in the binary file.
