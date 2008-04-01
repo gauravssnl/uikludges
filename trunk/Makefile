@@ -17,9 +17,9 @@ CERT_PATH=C:\certificates
 CERT=${CERT_PATH}\RedInnovationDeveloperCertificate.cert
 PRIV_KEY=${CERT_PATH}\PrivateKeyNoPassphrase.pem
 
-# Required capabilties in Ensymble format 
-CAPABILITIES=Location+NetworkServices
-
+# Required capabilties in Ensymble format.
+# List all Dev. Cert. capabilities
+CAPABILITIES="PowerMgmt+ReadDeviceData+WriteDeviceData+TrustedUI+ProtServ+SwEvent+NetworkServices+LocalServices+ReadUserData+WriteUserData+Location+SurroundingsDD+UserEnvironment"
 
 MODULES="uikludges applicationmanager"
 

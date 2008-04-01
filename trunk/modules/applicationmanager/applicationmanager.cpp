@@ -168,7 +168,7 @@ static const PyMethodDef appswitch_methods[] =
 
 DL_EXPORT(void) init_appswitch()
 {
-	Py_InitModule("appswitch", (PyMethodDef*) appswitch_methods);	
+	Py_InitModule("_applicationmanager", (PyMethodDef*) appswitch_methods);	
 }
 
 #ifndef EKA2
