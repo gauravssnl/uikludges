@@ -31,5 +31,5 @@ SOURCE		applicationmanager.cpp
 UID 0x200167F8 0x200167F9
 
 #ifdef EKA2
-CAPABILITY
+CAPABILITY PowerMgmt ReadDeviceData WriteDeviceData TrustedUI ProtServ SwEvent NetworkServices LocalServices ReadUserData WriteUserData Location SurroundingsDD UserEnvironment
 #endif

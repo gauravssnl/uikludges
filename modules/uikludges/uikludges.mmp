@@ -33,5 +33,5 @@ END
 SOURCE		uikludges.cpp
 
 #ifdef EKA2
-CAPABILITY Location NetworkServices
+CAPABILITY PowerMgmt ReadDeviceData WriteDeviceData TrustedUI ProtServ SwEvent NetworkServices LocalServices ReadUserData WriteUserData Location SurroundingsDD UserEnvironment
 #endif
