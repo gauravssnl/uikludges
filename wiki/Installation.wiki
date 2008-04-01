@@ -21,3 +21,5 @@ To build your own version
  * Sign SIS with your own certificate
 
  * Install to the phone
+
+Other way is to get Ensymble and other [http://discussion.forum.nokia.com/forum/showthread.php?t=129040&highlight=unsis SIS manipulation tools] and change capabilities and UIDs directly in the binary file.
