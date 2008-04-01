@@ -1,4 +1,6 @@
-#How to install this for your phone
+# How to install this for your phone
+
+== By building ==
 
 Symbian platform security makes it difficult to distribute development binaries. Thus, we recommend you to build this thing your self.
 
@@ -21,5 +23,7 @@ To build your own version
  * Sign SIS with your own certificate
 
  * Install to the phone
+
+== By SIS hacking ==
 
 Other way is to get Ensymble and other [http://discussion.forum.nokia.com/forum/showthread.php?t=129040&highlight=unsis SIS manipulation tools] and change capabilities and UIDs directly in the binary file.
