@@ -21,6 +21,7 @@ LIBRARY		cone.lib
 LIBRARY     apparc.lib 
 LIBRARY     ws32.lib 
 LIBRARY     bafl.lib 
+LIBRARY		efsrv.lib
 
 //MACRO __DO_LOGGING__
 //LIBRARY	    flogger.lib

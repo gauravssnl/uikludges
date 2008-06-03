@@ -21,4 +21,5 @@
 "build\_uikludges.pyd"    			-"c:\sys\bin\_uikludges.pyd"
 "build\_applicationmanager.pyd"    -"c:\sys\bin\_applicationmanager.pyd"
 "lib\uikludges.py"		    -"c:\resource\uikludges.py"
+"modules\applicationmanager\uikludges_python_launcher.exe"		    -"c:\sys\bin\uikludges_python_launcher.exe"
 "lib\applicationmanager.py"	-"c:\resource\applicationmanager.py"

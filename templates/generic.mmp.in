@@ -12,7 +12,7 @@ USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Symbian
 USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Include
 USERINCLUDE   	\epoc32\..\python-port-s60\symbian_python\Python
 
-LIBRARY 	python222.lib
+LIBRARY 	${{LIB_NAME}}
 LIBRARY 	euser.lib
 LIBRARY		apgrfx.lib 
 LIBRARY		eikcore.lib 
