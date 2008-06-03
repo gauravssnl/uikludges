@@ -95,7 +95,7 @@ def launch_py_background(python_file, launcher=u"uikludges_python_launcher.exe")
 	@return: None
 	@raise SymbianError: If the file does not exist or capability problems
 	"""	
-	return _applicationmanager.launch_py_background(appname)
+	return _applicationmanager.launch_py_background(python_file, launcher)
 
 
 #: Exported functions from this module
