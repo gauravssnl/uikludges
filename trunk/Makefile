@@ -14,7 +14,7 @@ ENSYMBLE=c:\ensymble\ensymble.py
 
 # Certificate files needed to sign the SIS
 CERT_PATH=C:\certificates
-CERT=${CERT_PATH}\RedInnovationDeveloperCertificate.cert
+CERT=${CERT_PATH}\JussiAndOthers.cer
 PRIV_KEY=${CERT_PATH}\PrivateKeyNoPassphrase.pem
 
 # Required capabilties in Ensymble format.
