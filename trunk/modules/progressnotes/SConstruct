@@ -1,0 +1,29 @@
+
+
+from scons_symbian import *
+
+package = "ProgressNotes.sis"
+#SymbianProgram( "progressnotes.mmp", package = package, capabilities = FREE_CAPS )
+
+# Help
+opts = Options()
+opts.Add('pythonlib', 'Select correct Python library', "Python222")
+env = Environment(options = opts)
+Help(opts.GenerateHelpText(env))
+
+#: Select your Python library
+PYTHON_LIB = ARGUMENTS.get( "pythonlib", "Python222" )
+
+
+SymbianProgram( "_progressnotes", TARGETTYPE_PYD, 
+                sources = [ "progressnotes.cpp", "progressnotesmodule.cpp" ],
+                resources = [ "progressnotes.rss" ],
+                includes  = [ join( DEFAULT_SYSTEM_INCLUDE, "python" ), join( DEFAULT_SYSTEM_INCLUDE, "libc" ) ],
+                libraries = [ PYTHON_LIB,
+                              "euser", "estlib",
+                              "avkon", "eikcoctl", "eikdlg", "eikcdlg", "eikctl", "cone"],
+                package = package, capabilities = FREE_CAPS )
+
+SymbianPackage( package, 
+                extra_files = [ ( "python", "test_progressnotes.py" ),
+                                ( join( "python", "lib" ), "progressnotes.py" ) ] )

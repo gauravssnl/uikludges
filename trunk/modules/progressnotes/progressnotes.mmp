@@ -1,0 +1,38 @@
+TARGETTYPE	dll
+TARGET		_progressnotes.pyd
+TARGETPATH	\sys\bin
+
+NOSTRICTDEF
+EXPORTUNFROZEN
+
+SYSTEMINCLUDE 	\epoc32\include
+SYSTEMINCLUDE 	\epoc32\include\libc
+
+USERINCLUDE		.
+USERINCLUDE   	\epoc32\include\python
+/*
+"python222","euser", "estlib", "example",
+                                  avkon", "eikcoctl", "eikdlg", "eikcdlg", "eikctl",
+                                  cone"
+                                  */
+
+LIBRARY 	MyPython222.lib
+LIBRARY 	euser.lib
+LIBRARY  	avkon.lib
+LIBRARY		cone.lib 
+LIBRARY     estlib.lib 
+library 	eikcoctl.lib
+library 	efsrv.lib eikcdlg.lib eikctl.lib 
+
+
+START RESOURCE progressnotes.rss
+HEADER
+TARGETPATH  \resource\apps
+END
+
+SOURCE		progressnotes.cpp
+SOURCE		progressnotesmodule.cpp
+
+#ifdef EKA2
+CAPABILITY PowerMgmt ReadDeviceData WriteDeviceData TrustedUI ProtServ SwEvent NetworkServices LocalServices ReadUserData WriteUserData Location SurroundingsDD UserEnvironment
+#endif

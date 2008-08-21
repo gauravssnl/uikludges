@@ -1,0 +1,10 @@
+
+PRJ_PLATFORMS
+#ifdef EKA1
+armi wins winscw
+#else
+gcce winscw
+#endif
+
+PRJ_MMPFILES
+progressnotes.mmp
