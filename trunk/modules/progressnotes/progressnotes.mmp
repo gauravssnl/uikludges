@@ -7,16 +7,11 @@ EXPORTUNFROZEN
 
 SYSTEMINCLUDE 	\epoc32\include
 SYSTEMINCLUDE 	\epoc32\include\libc
+SYSTEMINCLUDE 	\epoc32\include\python
 
 USERINCLUDE		.
-USERINCLUDE   	\epoc32\include\python
-/*
-"python222","euser", "estlib", "example",
-                                  avkon", "eikcoctl", "eikdlg", "eikcdlg", "eikctl",
-                                  cone"
-                                  */
 
-LIBRARY 	MyPython222.lib
+LIBRARY 	Python222.lib
 LIBRARY 	euser.lib
 LIBRARY  	avkon.lib
 LIBRARY		cone.lib 

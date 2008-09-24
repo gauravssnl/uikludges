@@ -1,5 +1,5 @@
 /**
- * Interprocess communications module for PyS60
+ * Progress dialogs for PyS60
  *
  * __author__    = "Jussi Toivola <jussi@redinnovation.com>"
  * __copyright__ = "2008 Red Innovation Ltd."
@@ -8,7 +8,6 @@
 
 #include <Python.h>
 #include <symbian_python_ext_util.h>
-#include <logman/logmanutils.h>
 
 #include "progressnotes.h"
 
@@ -17,72 +16,61 @@
 #define ProgressNote_TypeString "ProgressNote.type_ProgressNote"
 #define ProgressNoteTypeObject (*(PyTypeObject *)SPyGetGlobalString(ProgressNote_TypeString))
 
-/// Message for Python exception
-const char* KErrProgressNoteNotOpen = "No active note.";
-
-/// Message for Symbian panic.
-_LIT( KMsgInvalidNotifier, "Invalid notifier type" );
-
-enum TProgressType
-{
-    ENoteTypeWait,
-    ENoteTypeProgress
-};
-
+/** Wrapper for the Python callback. 
+  * Forwards the DialogDismissedL callback to Python function 
+  */
 class CCallbackWrapper : public MProgressDialogCallback
 {
     public:
-    // Python function callback
+    /// Python function callback
     PyObject* iCallback;
+    
+    /// The caller class
     CProgressNotes* iParent;
     
-    CCallbackWrapper( PyObject* aCallback, CProgressNotes* aParent ) : iCallback( aCallback ), iParent( aParent )
+    CCallbackWrapper( PyObject* aCallback, CProgressNotes* aParent ) :
+                      iCallback( aCallback ), 
+                      iParent( aParent )
     {
-        Py_XINCREF(iCallback);
+        // Increase reference to Python object
+        Py_INCREF(iCallback);
     }
-    // Called when user presses a button
+    // Called when user presses the cancel button
     void DialogDismissedL (TInt aButtonId)
     {
-        LOGMAN_SENDLOG( "enter DialogDismissedL" )
         iParent->FinishL( EFalse );
         
         if (aButtonId == EAknSoftkeyCancel)
         {
+            // See: http://www.python.org/doc/ext/callingPython.html
             PyObject *result;
-        
+            
+            // Restore Python context before calling Python code!
             PyEval_RestoreThread(PYTHON_TLS->thread_state);
             result = PyEval_CallObject( iCallback, NULL );
             PyEval_SaveThread();
-
+            
+            // Reduce reference to Python object
             Py_XDECREF(result);
         }
-        LOGMAN_SENDLOG( "exit DialogDismissedL" )
     }
     
     ~CCallbackWrapper()
     {
-        LOGMAN_SENDLOG( "enter ~CCallbackWrapper" )
-        if ( iCallback )
-        {
-            Py_XDECREF( iCallback );
-        }
-        LOGMAN_SENDLOG( "exit ~CCallbackWrapper" )
-    };
-    
+        // Reduce reference to callback object
+        Py_XDECREF( iCallback );
+    };    
 };
 
-/// RProgressNote class wrapper declaration
+/// CProgressNote class wrapper declaration
 struct Type_ProgressNote
 {
     /// Python type header.
     PyObject_HEAD;
     /// RProgressNote instance.
     CProgressNotes* iProgressNotes;
-    CCallbackWrapper* iCallbackWrapper;    
-    /// Type of the notifier
-    //TInt iType;
-    /// Is a note activated?
-    TBool iIsActive;
+    /// Our callback interface
+    CCallbackWrapper* iCallbackWrapper;            
 };
 
 // Prototypes
@@ -94,24 +82,15 @@ static PyObject* ProgressNote_SetCancelCallback( Type_ProgressNote* self, PyObje
 
 static const PyMethodDef ProgressNote_methods[] =
 {
-    {"progress",  (PyCFunction)ProgressNote_Progress,   METH_VARARGS, "" },    
-    {"update",    (PyCFunction)ProgressNote_UpdateProgress,   METH_VARARGS, "" },
+    {"progress",  (PyCFunction)ProgressNote_Progress, METH_VARARGS, "" },    
+    {"update",    (PyCFunction)ProgressNote_UpdateProgress, METH_VARARGS, "" },
     {"wait",      (PyCFunction)ProgressNote_Wait, METH_NOARGS, "" },
-    {"finish",    (PyCFunction)ProgressNote_Finish,   METH_NOARGS, "" },
-    {"cancel_callback", (PyCFunction)ProgressNote_SetCancelCallback,  METH_VARARGS, "" },
+    {"finish",    (PyCFunction)ProgressNote_Finish, METH_NOARGS, "" },
+    {"cancel_callback", (PyCFunction)ProgressNote_SetCancelCallback,  
+                                     METH_VARARGS, "" },
     {NULL, NULL}
 };
 
-/**
-  * Initialize object data.
-  */
-static void Initialize( Type_ProgressNote* self )
-{
-    if ( self->iIsActive )
-    {
-        self->iIsActive = EFalse;
-    }
-}
 
 static PyObject* ProgressNote_Finish(Type_ProgressNote* self)
 {
@@ -136,31 +115,35 @@ static PyObject* ProgressNote_Wait(Type_ProgressNote* self)
     return Py_True;
 }
 
-static PyObject* ProgressNote_UpdateProgress(Type_ProgressNote* self, PyObject* args)
+static PyObject* ProgressNote_UpdateProgress(Type_ProgressNote* self, 
+                                             PyObject* args)
 {
     
-    TInt newpos = 0;
+    TInt aNewpos      = 0;
     char* title       = NULL;
     TInt title_length = 0;
     
-    if (!PyArg_ParseTuple(args, "iu#", &newpos, &title, &title_length) )
+    if (!PyArg_ParseTuple(args, "iu#", &aNewpos, &title, &title_length) )
     {
         return 0;
     }
     
-    TPtrC aQueueName((TUint16*)title, title_length );
-    TRAPD( err, self->iProgressNotes->UpdateProcessL( newpos, aQueueName ) );
+    // Convert C string into Symbian descriptor
+    TPtrC aTitle((TUint16*)title, title_length );
+    
+    // TRAP leaves
+    TRAPD( err, self->iProgressNotes->UpdateProcessL( aNewpos, aTitle ) );
     if ( err != KErrNone )
     {
+        // Returns NULL
         return SPyErr_SetFromSymbianOSErr(err);
     }
-    
+    // Remember to increase reference count
     Py_INCREF(Py_True);
     return Py_True;
 }
-
 /**
-  * Show progress note-
+  * Show progress note
   */
 static PyObject* ProgressNote_Progress(Type_ProgressNote* self, PyObject* args)
 {
@@ -171,8 +154,6 @@ static PyObject* ProgressNote_Progress(Type_ProgressNote* self, PyObject* args)
         return 0;
     }
 
-    Initialize( self );
-
     // Construct the message queue handle    
     TRAPD( err, self->iProgressNotes->StartProgressNoteL( maxvalue ) );
 
@@ -180,8 +161,6 @@ static PyObject* ProgressNote_Progress(Type_ProgressNote* self, PyObject* args)
     {
         return SPyErr_SetFromSymbianOSErr(err);
     }
-
-    self->iIsActive = ETrue;
 
     Py_INCREF(Py_True);
     return Py_True;
@@ -194,9 +173,7 @@ static PyObject* ProgressNote_Progress(Type_ProgressNote* self, PyObject* args)
   * @param args  Contains the callback object.
 */
 PyObject *ProgressNote_SetCancelCallback(Type_ProgressNote *self, PyObject *args )
-{
-    
-    LOGMAN_SENDLOG( "enter ProgressNote_SetCancelCallback" )
+{   
         
     PyObject *callback = NULL;
     if (!PyArg_ParseTuple(args, "O", &callback))
@@ -207,13 +184,11 @@ PyObject *ProgressNote_SetCancelCallback(Type_ProgressNote *self, PyObject *args
     TRAPD(err, self->iCallbackWrapper = new (ELeave) CCallbackWrapper(callback, self->iProgressNotes ) );
     if ( err )
     {
-        SPyErr_SetFromSymbianOSErr( err );
-        return NULL;
+        return SPyErr_SetFromSymbianOSErr( err );
     }
     
     self->iProgressNotes->SetCallback( self->iCallbackWrapper );
     
-    LOGMAN_SENDLOG( "exit ProgressNote_SetCancelCallback" )
         
     Py_INCREF(Py_True);
     return Py_True;
@@ -223,14 +198,12 @@ PyObject *ProgressNote_SetCancelCallback(Type_ProgressNote *self, PyObject *args
 ////////////////////////////////////////////////////////////////////////////////
 // ProgressNote types definitions
 ////////////////////////////////////////////////////////////////////////////////
-
-
 /**ProgressNote python constructor*/
 static PyObject* Type_ProgressNote_Construct(PyObject* /*self*/, PyObject * args)
 {
-    //LOGMAN_SENDLOG( "enter Type_ProgressNote_Construct" )
     
-    Type_ProgressNote *self = PyObject_New(Type_ProgressNote, &ProgressNoteTypeObject);
+    Type_ProgressNote *self = PyObject_New(Type_ProgressNote, 
+                                            &ProgressNoteTypeObject);
 
     if (!self)
     {
@@ -241,10 +214,9 @@ static PyObject* Type_ProgressNote_Construct(PyObject* /*self*/, PyObject * args
                 self->iProgressNotes->ConstructL(); );  
     if ( err )
     {
-        SPyErr_SetFromSymbianOSErr( err );
-        return NULL;
+        return SPyErr_SetFromSymbianOSErr( err );        
     }
-    self->iIsActive = EFalse;
+    // GCCE does not set to NULL by default
     self->iCallbackWrapper = NULL;
     
     return (PyObject*)self;
@@ -253,26 +225,17 @@ static PyObject* Type_ProgressNote_Construct(PyObject* /*self*/, PyObject * args
 /** ProgressNote python destructor */
 static void dealloc_ProgressNote(Type_ProgressNote* self)
 {
-    LOGMAN_SENDLOG( "enter dealloc_ProgressNote" )
     if ( self->iProgressNotes )
     {
-
-        if ( self->iIsActive )
-        {
-            self->iIsActive = EFalse;
-        }
-
         delete self->iProgressNotes;
         self->iProgressNotes = NULL;
     }
- 
     if ( self->iCallbackWrapper )
     {
         delete self->iCallbackWrapper;
+        self->iCallbackWrapper = NULL;
     }
-
     PyObject_Del(self);
-    LOGMAN_SENDLOG( "exit dealloc_ProgressNote" )
 }
 
 static PyObject *getattr_ProgressNote(PyObject *self, char *name)
@@ -304,14 +267,12 @@ static const PyMethodDef _progressnotes_methods[] =
 
 DL_EXPORT(void) init_progressnotes(void)
 {
-    LOGMAN_SENDLOG( "init_progressnotes" )
     PyObject* m = Py_InitModule("_progressnotes", (PyMethodDef*)_progressnotes_methods);
 
     // Create ProgressNote class type
     PyTypeObject *ProgressNote_type = PyObject_New(PyTypeObject, &PyType_Type);
     if (!ProgressNote_type)
         return;
-
     *ProgressNote_type = type_template_ProgressNote;
 
     TInt err = SPyAddGlobalString(ProgressNote_TypeString, (PyObject *)ProgressNote_type);
