@@ -18,7 +18,7 @@ PYTHON_LIB = ARGUMENTS.get( "pythonlib", "Python222" )
 SymbianProgram( "_progressnotes", TARGETTYPE_PYD, 
                 sources = [ "progressnotes.cpp", "progressnotesmodule.cpp" ],
                 resources = [ "progressnotes.rss" ],
-                includes  = [ join( DEFAULT_SYSTEM_INCLUDE, "python" ), join( DEFAULT_SYSTEM_INCLUDE, "libc" ) ],
+                includes  = [ join( EPOC32_INCLUDE, "python" ), join( EPOC32_INCLUDE, "libc" ) ],
                 libraries = [ PYTHON_LIB,
                               "euser", "estlib",
                               "avkon", "eikcoctl", "eikdlg", "eikcdlg", "eikctl", "cone"],

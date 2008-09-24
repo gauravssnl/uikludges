@@ -1,45 +1,48 @@
 
-#include <logman/logmanutils.h>
-
 #include <eikenv.h>
 #include <progressbar.rsg>
 #include "progressnotes.h"
 
 CProgressNotes::~CProgressNotes()
 {
-    LOGMAN_SENDLOG( "enter ~CProgressNotes" )
-    FinishL(ETrue);
+    
+    // If this fails we have some serious trouble anyway
+    TRAPD(err, FinishL(ETrue); );
     
     // Free the resource
     CEikonEnv::Static()->DeleteResourceFile( iRscOffset );
     
-    LOGMAN_SENDLOG( "exit ~CProgressNotes" )
 }
+
+
+#ifdef __WINSCW__
+_LIT( KRscProgressNotes, "Z:\\resource\\apps\\progressnotes.rsc" );
+#else
+_LIT( KRscProgressNotes, "\\resource\\apps\\progressnotes.rsc" );
+#endif
+
 
 void CProgressNotes::ConstructL()
 {
-    LOGMAN_SENDLOG( "enter CProgressNotes::ConstructL" )
-    iRscOffset = CEikonEnv::Static()->AddResourceFileL(_L("\\resource\\apps\\progressnotes.rsc"));
-    LOGMAN_SENDLOG( "exit  CProgressNotes::ConstructL" )
+    iRscOffset = CEikonEnv::Static()->AddResourceFileL( KRscProgressNotes );    
 }
 
 void CProgressNotes::FinishL( TBool aFinish )
 {
-    LOGMAN_SENDLOGF( "enter Finish:%d", aFinish )
-    
+        
     if(iProgressDialog)
     {
         if( aFinish )
         {
         iProgressDialog->SetCallback( NULL );
-        LOGMAN_SENDLINE( iProgressDialog->ProcessFinishedL();  )
+        iProgressDialog->ProcessFinishedL(); 
         }
-        LOGMAN_SENDLINE( iProgressDialog = NULL; )
+        iProgressDialog = NULL;
     }
     
     if(iProgressInfo)
     {
-        LOGMAN_SENDLINE( iProgressInfo = NULL; )
+        iProgressInfo = NULL;
     }
     
     if(iWaitDialog)
@@ -47,31 +50,27 @@ void CProgressNotes::FinishL( TBool aFinish )
         if( aFinish )
         {
         iWaitDialog->SetCallback( NULL );
-        LOGMAN_SENDLINE( iWaitDialog->ProcessFinishedL(); )
+        iWaitDialog->ProcessFinishedL();
         }
         
-        LOGMAN_SENDLINE( iWaitDialog = NULL; )
-    }
-    LOGMAN_SENDLOG( "exit Finish" )
+        iWaitDialog = NULL;
+    }    
 }
  
 void CProgressNotes::StartWaitNoteL()	
 {
-    LOGMAN_SENDLOG( "enter StartWaitNoteL" )
     
     iWaitDialog = new (ELeave) CAknWaitDialog( (REINTERPRET_CAST(CEikDialog**, &iWaitDialog) ), ETrue);
     iWaitDialog->PrepareLC(R_WAIT_NOTE_SOFTKEY_CANCEL);        
     iWaitDialog->SetCallback( this );
     iWaitDialog->RunLD();
     
-    LOGMAN_SENDLOG( "exit StartWaitNoteL" )
 }
  
 _LIT( KStrEmpty, "" );
 void CProgressNotes::StartProgressNoteL(TInt aFinalValue)	
 {
-    LOGMAN_SENDLOG( "enter StartProgressNoteL" )
-     
+    
     iProgressDialog = new (ELeave) CAknProgressDialog(
      (REINTERPRET_CAST(CEikDialog**, &iProgressDialog)),
      ETrue);
@@ -84,9 +83,7 @@ void CProgressNotes::StartProgressNoteL(TInt aFinalValue)
     iProgressDialog->SetCallback( this );
     
     iProgressDialog->RunLD();
-    iProgressInfo->SetFinalValue(aFinalValue);
-    
-    LOGMAN_SENDLOG( "exit StartProgressNoteL" )
+    iProgressInfo->SetFinalValue(aFinalValue);       
     
 }
  
