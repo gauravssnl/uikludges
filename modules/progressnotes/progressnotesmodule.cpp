@@ -13,8 +13,8 @@
 
 ////////////////////////////////////////////////////////////////////
 
-#define ProgressNote_TypeString "ProgressNote.type_ProgressNote"
-#define ProgressNoteTypeObject (*(PyTypeObject *)SPyGetGlobalString(ProgressNote_TypeString))
+//#define ProgressNote_TypeString "ProgressNote.type_ProgressNote"
+//#define ProgressNoteTypeObject (*(PyTypeObject *)SPyGetGlobalString(ProgressNote_TypeString))
 
 /** Wrapper for the Python callback. 
   * Forwards the DialogDismissedL callback to Python function 
@@ -198,29 +198,7 @@ PyObject *ProgressNote_SetCancelCallback(Type_ProgressNote *self, PyObject *args
 ////////////////////////////////////////////////////////////////////////////////
 // ProgressNote types definitions
 ////////////////////////////////////////////////////////////////////////////////
-/**ProgressNote python constructor*/
-static PyObject* Type_ProgressNote_Construct(PyObject* /*self*/, PyObject * args)
-{
-    
-    Type_ProgressNote *self = PyObject_New(Type_ProgressNote, 
-                                            &ProgressNoteTypeObject);
 
-    if (!self)
-    {
-        return SPyErr_SetFromSymbianOSErr(KErrNone);
-    }
-        
-    TRAPD( err, self->iProgressNotes = new (ELeave)CProgressNotes();
-                self->iProgressNotes->ConstructL(); );  
-    if ( err )
-    {
-        return SPyErr_SetFromSymbianOSErr( err );        
-    }
-    // GCCE does not set to NULL by default
-    self->iCallbackWrapper = NULL;
-    
-    return (PyObject*)self;
-}
 
 /** ProgressNote python destructor */
 static void dealloc_ProgressNote(Type_ProgressNote* self)
@@ -243,21 +221,45 @@ static PyObject *getattr_ProgressNote(PyObject *self, char *name)
     return Py_FindMethod(const_cast<PyMethodDef*>(&ProgressNote_methods[0]), self, name);
 }
 
-static const PyTypeObject type_template_ProgressNote =
+static PyTypeObject progressnotes_ProgressNoteType =
 {
     /*******************************************************/
-    PyObject_HEAD_INIT(0)    /* initialize to 0 to ensure Win32 portability */
-    0,                 /*ob_size*/
-    "_progressnotes.ProgressNote",            /*tp_name*/
-    sizeof(Type_ProgressNote), /*tp_basicsize*/
-    0,                 /*tp_itemsize*/
+    PyObject_HEAD_INIT(0)          /* initialize to 0 to ensure Win32 portability */
+    0,                             /*ob_size*/
+    "_progressnotes.ProgressNote", /*tp_name*/
+    sizeof(Type_ProgressNote),     /*tp_basicsize*/
+    0,                             /*tp_itemsize*/
     /* methods */
     (destructor)dealloc_ProgressNote, /*tp_dealloc*/
-    0, /*tp_print*/
+    0,                                 /*tp_print*/
     (getattrfunc)getattr_ProgressNote, /*tp_getattr*/
 
     /* implied by ISO C: all zeros thereafter */
 };
+
+/**ProgressNote python constructor*/
+static PyObject* Type_ProgressNote_Construct(PyObject* /*self*/, PyObject * args)
+{
+    
+    Type_ProgressNote *self = PyObject_New(Type_ProgressNote, 
+                                            &progressnotes_ProgressNoteType);
+
+    if (!self)
+    {
+        return SPyErr_SetFromSymbianOSErr(KErrNone);
+    }
+        
+    TRAPD( err, self->iProgressNotes = new (ELeave)CProgressNotes();
+                self->iProgressNotes->ConstructL(); );  
+    if ( err )
+    {
+        return SPyErr_SetFromSymbianOSErr( err );        
+    }
+    // GCCE does not set to NULL by default
+    self->iCallbackWrapper = NULL;
+    
+    return (PyObject*)self;
+}
 
 static const PyMethodDef _progressnotes_methods[] =
 {
@@ -267,24 +269,13 @@ static const PyMethodDef _progressnotes_methods[] =
 
 DL_EXPORT(void) init_progressnotes(void)
 {
-    PyObject* m = Py_InitModule("_progressnotes", (PyMethodDef*)_progressnotes_methods);
-
-    // Create ProgressNote class type
-    PyTypeObject *ProgressNote_type = PyObject_New(PyTypeObject, &PyType_Type);
-    if (!ProgressNote_type)
-        return;
-    *ProgressNote_type = type_template_ProgressNote;
-
-    TInt err = SPyAddGlobalString(ProgressNote_TypeString, (PyObject *)ProgressNote_type);
-    if (err != KErrNone ) // 0 is success
-    {
-        PyObject_Del(ProgressNote_type);
-        PyErr_SetString(PyExc_Exception, "SPyAddGlobalString failed");
-        return;
-    }
-
-    ProgressNoteTypeObject.ob_type = &PyType_Type;
-
+    // &PyType_Type is not constant so we have to assing it here 
+    // instead of in the progressnotes_ProgressNoteType definition.
+    progressnotes_ProgressNoteType.ob_type = &PyType_Type;
+    
+    // Initialize module
+    PyObject* m = Py_InitModule("_progressnotes", 
+                    (PyMethodDef*)_progressnotes_methods);    
 }
 
 #ifndef EKA2
