@@ -1,6 +1,6 @@
 
 #include <eikenv.h>
-#include <progressbar.rsg>
+#include <progressnotes.rsg>
 #include "progressnotes.h"
 
 CProgressNotes::~CProgressNotes()
