@@ -7,11 +7,7 @@ EXPORTUNFROZEN
 
 SYSTEMINCLUDE 	\epoc32\include
 SYSTEMINCLUDE 	\epoc32\include\libc
-
-// TODO: Need to hardcode for now, before Scons is fixed
-USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Symbian
-USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Include
-USERINCLUDE   	\Symbian\9.2\S60_3rd_FP1\pys60\src\core\Python
+USERINCLUDE   	\epoc32\include\python
 
 LIBRARY 	python222.lib
 LIBRARY 	euser.lib
